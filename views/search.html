@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Search</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<nav>
+  <a href="/">Home</a>
+  <a href="/about">About</a>
+  <a href="/contact">Contact</a>
+  <a href="/search?q=test">Search</a>
+  <a href="/item/1">Item</a>
+  <a href="/api/info" target="_blank">Open API Info</a>
+</nav>
+
+<div class="container">
+  <h1>Search Results</h1>
+  <p>Your search query:</p>
+  <h2 id="query"></h2>
+</div>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const query = params.get("q");
+
+  if (!query) {
+    document.querySelector(".container").innerHTML =
+            "<h1>400</h1><p>Search query is missing.</p>";
+  } else {
+    document.getElementById("query").textContent = query;
+  }
+</script>
+
+</body>
+</html>

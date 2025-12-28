@@ -24,6 +24,9 @@ Time management and daily schedule planning.
 - GET /about – Information about the team and project
 - GET /contact – Contact page with form
 - POST /contact – Handles contact form submission
+- GET /search?q=value – displays search results using query parameters
+- GET /item/:id – displays item information using route parameters
+- GET /api/info – returns project information in JSON format
 - 404 – Custom page for unknown routes
 
 ## Contact Form
