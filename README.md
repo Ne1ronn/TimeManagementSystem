@@ -38,11 +38,56 @@ The contact form includes:
 Form data is sent using the POST method and processed on the server using `req.body`.
 After submission, the server returns a confirmation message to the user.
 
-## Roadmap
-- Week 2: Validate forms and POST routes
-- Week 3: Integration our backend with database (PostgreSQL)
+## Database
+The project uses **PostgreSQL** as a database.
+
+### Main Table: items
+The database contains one main entity used for CRUD operations.
+
+Fields:
+- `id` — SERIAL, Primary Key
+- `title` — TEXT, required
+- `description` — TEXT, required
+
+The table is created automatically when the server starts if it does not already exist.
+
+
+## CRUD API
+
+The following REST API endpoints are implemented for the `items` entity:
+
+- `GET /api/items`  
+  Returns all items sorted by id in ascending order.
+
+- `GET /api/items/:id`  
+  Returns a single item by its id.
+
+- `POST /api/items`  
+  Creates a new item using JSON request body.
+
+- `PUT /api/items/:id`  
+  Updates an existing item by id using JSON request body.
+
+- `DELETE /api/items/:id`  
+  Deletes an item by id.
+
+All responses are returned in JSON format.
+
+## Validation and HTTP Status Codes
+The API uses proper HTTP status codes:
+
+- `200 OK` — successful GET, PUT, DELETE requests
+- `201 Created` — successful POST request
+- `400 Bad Request` — invalid id or missing required fields
+- `404 Not Found` — item does not exist
+- `500 Internal Server Error` — server or database error
+
+## API Testing Links
+For quick testing, the Home page (`/`) includes direct links to:
+- `/api/items`
+- `/api/items/1`
 
 ## Installation & Run
 ```bash
 npm install
-node server.js
+node app.js
