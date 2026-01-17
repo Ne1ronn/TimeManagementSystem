@@ -18,6 +18,14 @@ async function initDB() {
     `);
 }
 
+async function resetAndInit() {
+    await pool.query(`
+        DROP TABLE IF EXISTS items CASCADE;ç
+    `);
+
+    await initDB();
+}
+
 initDB();
 
 module.exports = pool;

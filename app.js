@@ -1,5 +1,6 @@
 const express = require("express");
 const path = require("path");
+const { connectDB } = require("./database/mongo_db");
 
 const pagesRoutes = require("./routes/pages");
 const apiRoutes = require("./routes/api");
@@ -28,6 +29,8 @@ app.use((req, res) => {
     }
 });
 
-app.listen(3000, () => {
-    console.log("Server running on http://localhost:3000");
+connectDB().then(() => {
+    app.listen(3000, () => {
+        console.log("Server running on http://localhost:3000");
+    });
 });

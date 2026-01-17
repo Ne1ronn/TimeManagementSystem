@@ -39,28 +39,26 @@ Form data is sent using the POST method and processed on the server using `req.b
 After submission, the server returns a confirmation message to the user.
 
 ## Database
-The project uses **PostgreSQL** as a database.
+The project uses **MongoDB** as a database.
 
-### Main Table: items
-The database contains one main entity used for CRUD operations.
+### Main Collection: items
 
 Fields:
-- `id` — SERIAL, Primary Key
-- `title` — TEXT, required
-- `description` — TEXT, required
+- `_id` — ObjectId (generated automatically by MongoDB)
+- `title` — string, required
+- `description` — string, required
 
-The table is created automatically when the server starts if it does not already exist.
-
+The collection is created automatically on the first insert operation.
 
 ## CRUD API
 
 The following REST API endpoints are implemented for the `items` entity:
 
-- `GET /api/items`  
-  Returns all items sorted by id in ascending order.
+- `GET /api/items` 
+  Returns all items.
 
 - `GET /api/items/:id`  
-  Returns a single item by its id.
+  Returns a single item by its MongoDB ObjectId.
 
 - `POST /api/items`  
   Creates a new item using JSON request body.
@@ -83,9 +81,8 @@ The API uses proper HTTP status codes:
 - `500 Internal Server Error` — server or database error
 
 ## API Testing Links
-For quick testing, the Home page (`/`) includes direct links to:
-- `/api/items`
-- `/api/items/1`
+API testing links are available on the Home page (/).
+Item IDs are MongoDB ObjectIds generated automatically.
 
 ## Installation & Run
 ```bash

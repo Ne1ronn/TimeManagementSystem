@@ -818,6 +818,7 @@
   },
   "dependencies": {
     "express": "^5.2.1",
+    "mongodb": "^7.0.0",
     "pg": "^8.16.3"
   }
 }

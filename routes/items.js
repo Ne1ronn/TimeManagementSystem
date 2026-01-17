@@ -1,14 +1,17 @@
 const express = require("express");
-const pool = require("../database/db");
+const { ObjectId } = require("mongodb");
+const { getDB } = require("../database/mongo_db");
 
 const router = express.Router();
 
 router.get("/", async (req, res) => {
     try {
-        const result = await pool.query(
-            "SELECT * FROM items ORDER BY id ASC"
-        );
-        res.json(result.rows);
+        const items = await getDB()
+            .collection("items")
+            .find()
+            .toArray();
+
+        res.status(200).json(items);
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: "Internal Server Error" });
@@ -16,26 +19,18 @@ router.get("/", async (req, res) => {
 });
 
 router.get("/:id", async (req, res) => {
-    const id = Number(req.params.id);
-
-    if (isNaN(id)) {
-        return res.status(400).json({ error: "Invalid id" });
-    }
-
     try {
-        const result = await pool.query(
-            "SELECT * FROM items WHERE id = $1",
-            [id]
-        );
+        const item = await getDB()
+            .collection("items")
+            .findOne({ _id: new ObjectId(req.params.id) });
 
-        if (result.rows.length === 0) {
+        if (!item) {
             return res.status(404).json({ error: "Item not found" });
         }
 
-        res.json(result.rows[0]);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: "Internal Server Error" });
+        res.status(200).json(item);
+    } catch {
+        res.status(400).json({ error: "Invalid id" });
     }
 });
 
@@ -47,12 +42,11 @@ router.post("/", async (req, res) => {
     }
 
     try {
-        const result = await pool.query(
-            "INSERT INTO items (title, description) VALUES ($1, $2) RETURNING id",
-            [title, description]
-        );
+        const result = await getDB()
+            .collection("items")
+            .insertOne({ title, description });
 
-        res.status(201).json({ id: result.rows[0].id });
+        res.status(201).json({ id: result.insertedId });
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: "Internal Server Error" });
@@ -60,56 +54,43 @@ router.post("/", async (req, res) => {
 });
 
 router.put("/:id", async (req, res) => {
-    const id = Number(req.params.id);
     const { title, description } = req.body;
-
-    if (isNaN(id)) {
-        return res.status(400).json({ error: "Invalid id" });
-    }
 
     if (!title || !description) {
         return res.status(400).json({ error: "Missing fields" });
     }
 
     try {
-        const result = await pool.query(
-            "UPDATE items SET title = $1, description = $2 WHERE id = $3",
-            [title, description, id]
-        );
+        const result = await getDB()
+            .collection("items")
+            .updateOne(
+                { _id: new ObjectId(req.params.id) },
+                { $set: { title, description } }
+            );
 
-        if (result.rowCount === 0) {
+        if (!result.matchedCount) {
             return res.status(404).json({ error: "Item not found" });
         }
 
-        res.json({ success: true });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: "Internal Server Error" });
+        res.status(200).json({ success: true });
+    } catch {
+        res.status(400).json({ error: "Invalid id" });
     }
 });
 
-
 router.delete("/:id", async (req, res) => {
-    const id = Number(req.params.id);
-
-    if (isNaN(id)) {
-        return res.status(400).json({ error: "Invalid id" });
-    }
-
     try {
-        const result = await pool.query(
-            "DELETE FROM items WHERE id = $1",
-            [id]
-        );
+        const result = await getDB()
+            .collection("items")
+            .deleteOne({ _id: new ObjectId(req.params.id) });
 
-        if (result.rowCount === 0) {
+        if (!result.deletedCount) {
             return res.status(404).json({ error: "Item not found" });
         }
 
-        res.json({ success: true });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: "Internal Server Error" });
+        res.status(200).json({ success: true });
+    } catch {
+        res.status(400).json({ error: "Invalid id" });
     }
 });
 
