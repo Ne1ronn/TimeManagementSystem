@@ -18,6 +18,26 @@ router.get("/", async (req, res) => {
     }
 });
 
+router.get("/filter", async (req, res) => {
+    const { title, fields } = req.query;
+
+    const filter = {};
+    if (title) {
+        filter.title = title;
+    }
+
+    const options = {};
+    if (fields) {
+        options.projection = {};
+        fields.split(",").forEach(f => options.projection[f] = 1);
+    }
+
+    let query = getDB().collection("items").find(filter, options);
+
+    const items = await query.toArray();
+    res.json(items);
+});
+
 router.get("/:id", async (req, res) => {
     try {
         const item = await getDB()

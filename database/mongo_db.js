@@ -7,7 +7,7 @@ let db;
 
 async function connectDB() {
     await client.connect();
-    db = client.db("assignment3");
+    db = client.db("TimeManagementSystem");
     console.log("MongoDB connected");
 }
 

@@ -1,19 +1,24 @@
-export function renderItems(items, onDelete) {
-    const list = document.getElementById("items");
-    list.innerHTML = "";
+export function renderItems(items, { onDelete, onEdit }) {
+    const ul = document.getElementById("items");
+    ul.innerHTML = "";
 
     items.forEach(item => {
         const li = document.createElement("li");
 
         li.innerHTML = `
-            <strong>${item.title}</strong>
-            <span>${item.description}</span>
-            <button data-id="${item._id}">❌</button>
+            <div>
+                <strong>${item.title}</strong>
+                <span>${item.description}</span>
+            </div>
+            <div>
+                <button class="edit">✎</button>
+                <button class="delete">✕</button>
+            </div>
         `;
 
-        li.querySelector("button").onclick = () =>
-            onDelete(item._id);
+        li.querySelector(".delete").onclick = () => onDelete(item._id);
+        li.querySelector(".edit").onclick = () => onEdit(item);
 
-        list.appendChild(li);
+        ul.appendChild(li);
     });
 }

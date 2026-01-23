@@ -1,26 +1,35 @@
-const API_URL = "/api/items";
+const BASE = "/api/items";
 
 export async function getItems() {
-    const res = await fetch(API_URL);
-    if (!res.ok) throw new Error("Failed to load items");
-    return res.json();
+    return fetch(BASE).then(r => r.json());
 }
 
 export async function createItem(data) {
-    const res = await fetch(API_URL, {
+    return fetch(BASE, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
     });
+}
 
-    if (!res.ok) throw new Error("Failed to create item");
-    return res.json();
+export async function updateItem(id, data) {
+    return fetch(`/api/items/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+    });
 }
 
 export async function deleteItem(id) {
-    const res = await fetch(`${API_URL}/${id}`, {
-        method: "DELETE"
-    });
+    return fetch(`${BASE}/${id}`, { method: "DELETE" });
+}
 
-    if (!res.ok) throw new Error("Failed to delete item");
+export async function filterItems({ title, fields }) {
+    const params = new URLSearchParams();
+
+    if (title) params.append("title", title);
+    if (fields?.length) params.append("fields", fields.join(","));
+
+    const res = await fetch(`/api/items/filter?${params.toString()}`);
+    return res.json();
 }
