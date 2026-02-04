@@ -19,8 +19,11 @@ async function handleDelete(id) {
 function startEdit(item) {
     const form = document.getElementById("form");
 
-    form.title.value = item.title;
-    form.description.value = item.description;
+    Object.keys(form.elements).forEach(name => {
+        if (item[name]) {
+            form[name].value = item[name];
+        }
+    });
 
     editingId = item._id;
     form.querySelector("button").textContent = "Update";
@@ -29,17 +32,21 @@ function startEdit(item) {
 document.getElementById("form").addEventListener("submit", async e => {
     e.preventDefault();
 
-    const data = {
-        title: e.target.title.value,
-        description: e.target.description.value
-    };
+    const data = Object.fromEntries(new FormData(e.target));
 
+    let res;
     if (editingId) {
-        await updateItem(editingId, data);
+        res = await updateItem(editingId, data);
         editingId = null;
         e.target.querySelector("button").textContent = "Add";
     } else {
-        await createItem(data);
+        res = await createItem(data);
+    }
+
+    if (!res.ok) {
+        const err = await res.json();
+        alert(err.error);
+        return;
     }
 
     e.target.reset();
@@ -49,12 +56,18 @@ document.getElementById("form").addEventListener("submit", async e => {
 document.getElementById("filterForm").addEventListener("submit", async e => {
     e.preventDefault();
 
-    const title = e.target.title.value;
+    const formData = new FormData(e.target);
 
-    const items = await filterItems({
-        title,
-        fields: ["title", "description"]
-    });
+    const fields = formData.getAll("fields");
+
+    const params = {
+        day: formData.get("day"),
+        sortBy: formData.get("sortBy"),
+        order: formData.get("order"),
+        fields: fields.join(",")
+    };
+
+    const items = await getItems(params);
 
     renderItems(items, {
         onDelete: handleDelete,

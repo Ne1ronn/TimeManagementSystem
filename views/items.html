@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Items</title>
+    <title>Time Management – Schedule</title>
     <link rel="stylesheet" href="/style.css">
 </head>
 <body>
@@ -14,28 +14,103 @@
     <a href="/items">Items</a>
     <a href="/search?q=test">Search</a>
     <a href="/item/1">Item</a>
+    <a href="/api/info" target="_blank">Open API Info</a>
 </nav>
 
 <div class="container">
-    <h1>Items</h1>
+    <h1>Daily Schedule</h1>
 
     <form id="form">
         <label>
-            Title
+            Activity title
             <input name="title" required>
         </label>
 
         <label>
             Description
-            <input name="description" required>
+            <input name="description">
+        </label>
+
+        <label>
+            Day
+            <select name="day" required>
+                <option value="">Select day</option>
+                <option>Monday</option>
+                <option>Tuesday</option>
+                <option>Wednesday</option>
+                <option>Thursday</option>
+                <option>Friday</option>
+                <option>Saturday</option>
+                <option>Sunday</option>
+            </select>
+        </label>
+
+        <label>
+            Start time
+            <input type="time" name="startTime" required>
+        </label>
+
+        <label>
+            End time
+            <input type="time" name="endTime" required>
+        </label>
+
+        <label>
+            Priority
+            <select name="priority">
+                <option value="1">High</option>
+                <option value="2" selected>Medium</option>
+                <option value="3">Low</option>
+            </select>
         </label>
 
         <button>Add</button>
     </form>
 
+    <hr>
+
     <form id="filterForm">
-        <input name="title" placeholder="Filter by title">
-        <button type="submit">Filter</button>
+        <label>
+            Day
+            <select name="day">
+                <option value="">All days</option>
+                <option>Monday</option>
+                <option>Tuesday</option>
+                <option>Wednesday</option>
+                <option>Thursday</option>
+                <option>Friday</option>
+            </select>
+        </label>
+
+        <label>
+            Sort by
+            <select name="sortBy">
+                <option value="">No sorting</option>
+                <option value="startTime">Start time</option>
+                <option value="priority">Priority</option>
+                <option value="createdAt">Created</option>
+            </select>
+        </label>
+
+        <label>
+            Order
+            <select name="order">
+                <option value="asc">ASC</option>
+                <option value="desc">DESC</option>
+            </select>
+        </label>
+
+        <div class="projection-box">
+            <span class="projection-title">Fields</span>
+
+            <label><input type="checkbox" name="fields" value="title" checked> Title</label>
+            <label><input type="checkbox" name="fields" value="day" checked> Day</label>
+            <label><input type="checkbox" name="fields" value="startTime" checked> Start</label>
+            <label><input type="checkbox" name="fields" value="endTime" checked> End</label>
+            <label><input type="checkbox" name="fields" value="priority"> Priority</label>
+        </div>
+
+        <button type="submit">Apply</button>
     </form>
 
     <ul id="items" class="items-list"></ul>

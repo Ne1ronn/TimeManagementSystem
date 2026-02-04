@@ -6,36 +6,41 @@ const router = express.Router();
 
 router.get("/", async (req, res) => {
     try {
-        const items = await getDB()
-            .collection("items")
-            .find()
-            .toArray();
+        const { title, day, sortBy, order, fields } = req.query;
 
+        const filter = {};
+
+        if (title) {
+            filter.title = { $regex: title, $options: "i" };
+        }
+
+        if (day) {
+            filter.day = day;
+        }
+
+        const options = {};
+
+        // PROJECTION
+        if (fields) {
+            options.projection = {};
+            fields.split(",").forEach(f => options.projection[f] = 1);
+        }
+
+        let cursor = getDB().collection("items").find(filter, options);
+
+        // SORTING
+        if (sortBy) {
+            cursor = cursor.sort({
+                [sortBy]: order === "desc" ? -1 : 1
+            });
+        }
+
+        const items = await cursor.toArray();
         res.status(200).json(items);
+
     } catch (err) {
-        console.error(err);
         res.status(500).json({ error: "Internal Server Error" });
     }
-});
-
-router.get("/filter", async (req, res) => {
-    const { title, fields } = req.query;
-
-    const filter = {};
-    if (title) {
-        filter.title = title;
-    }
-
-    const options = {};
-    if (fields) {
-        options.projection = {};
-        fields.split(",").forEach(f => options.projection[f] = 1);
-    }
-
-    let query = getDB().collection("items").find(filter, options);
-
-    const items = await query.toArray();
-    res.json(items);
 });
 
 router.get("/:id", async (req, res) => {
@@ -55,37 +60,33 @@ router.get("/:id", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-    const { title, description } = req.body;
+    const { title, description, day, startTime, endTime, priority } = req.body;
 
-    if (!title || !description) {
-        return res.status(400).json({ error: "Missing fields" });
+    if (!title || !day || !startTime || !endTime) {
+        return res.status(400).json({ error: "Missing required fields" });
     }
 
-    try {
-        const result = await getDB()
-            .collection("items")
-            .insertOne({ title, description });
+    const item = {
+        title,
+        description: description || "",
+        day,
+        startTime,
+        endTime,
+        priority: Number(priority) || 2,
+        createdAt: new Date()
+    };
 
-        res.status(201).json({ id: result.insertedId });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: "Internal Server Error" });
-    }
+    const result = await getDB().collection("items").insertOne(item);
+    res.status(201).json({ id: result.insertedId });
 });
 
 router.put("/:id", async (req, res) => {
-    const { title, description } = req.body;
-
-    if (!title || !description) {
-        return res.status(400).json({ error: "Missing fields" });
-    }
-
     try {
         const result = await getDB()
             .collection("items")
             .updateOne(
                 { _id: new ObjectId(req.params.id) },
-                { $set: { title, description } }
+                { $set: req.body }
             );
 
         if (!result.matchedCount) {

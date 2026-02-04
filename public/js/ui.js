@@ -6,11 +6,16 @@ export function renderItems(items, { onDelete, onEdit }) {
         const li = document.createElement("li");
 
         li.innerHTML = `
-            <div>
+            <div class="item-main">
                 <strong>${item.title}</strong>
-                <span>${item.description}</span>
+                <div class="item-meta">
+                    <span>${item.day}</span>
+                    <span>${item.startTime} – ${item.endTime}</span>
+                    <span>Priority: ${item.priority}</span>
+                </div>
+                ${item.description ? `<div class="item-desc">${item.description}</div>` : ""}
             </div>
-            <div>
+            <div class="item-actions">
                 <button class="edit">✎</button>
                 <button class="delete">✕</button>
             </div>

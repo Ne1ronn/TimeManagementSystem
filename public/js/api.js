@@ -1,7 +1,9 @@
 const BASE = "/api/items";
 
-export async function getItems() {
-    return fetch(BASE).then(r => r.json());
+export async function getItems(params = {}) {
+    const query = new URLSearchParams(params);
+    const res = await fetch(`/api/items?${query}`);
+    return res.json();
 }
 
 export async function createItem(data) {
@@ -24,12 +26,8 @@ export async function deleteItem(id) {
     return fetch(`${BASE}/${id}`, { method: "DELETE" });
 }
 
-export async function filterItems({ title, fields }) {
-    const params = new URLSearchParams();
-
-    if (title) params.append("title", title);
-    if (fields?.length) params.append("fields", fields.join(","));
-
-    const res = await fetch(`/api/items/filter?${params.toString()}`);
+export async function filterItems(params) {
+    const query = new URLSearchParams(params);
+    const res = await fetch(`/api/items?${query}`);
     return res.json();
 }

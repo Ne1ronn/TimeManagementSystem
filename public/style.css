@@ -47,6 +47,44 @@ nav a:hover {
     max-width: 420px;
 }
 
+.projection-box {
+    margin-top: 14px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    align-items: center;
+}
+
+.projection-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #6b7280;
+    margin-right: 8px;
+}
+
+.projection-box label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #374151;
+    line-height: 1;
+}
+
+.projection-box input[type="checkbox"] {
+    margin: 0;
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    vertical-align: middle;
+}
+
 /* ===== Headings ===== */
 h1 {
     font-size: 32px;
