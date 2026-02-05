@@ -8,12 +8,20 @@ router.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "..", "views", "index.html"));
 });
 
+router.get("/login", (req, res) => {
+    res.sendFile(path.join(__dirname, "..", "views", "login.html"));
+});
+
+router.get("/register", (req, res) => {
+    res.sendFile(path.join(__dirname, "..", "views", "register.html"));
+});
+
 router.get("/about", (req, res) => {
     res.sendFile(path.join(__dirname, "..", "views", "about.html"));
 });
 
-router.get("/items", (req, res) => {
-    res.sendFile(path.join(__dirname, "..", "views", "items.html"));
+router.get("/time-blocks", (req, res) => {
+    res.sendFile(path.join(__dirname, "..", "views", "time_block.html"));
 });
 
 router.get("/contact", (req, res) => {

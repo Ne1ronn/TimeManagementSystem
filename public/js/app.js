@@ -1,33 +1,63 @@
-import { getItems, createItem, deleteItem, updateItem, filterItems } from "./api.js";
-import { renderItems } from "./ui.js";
+import {
+    getTimeBlock,
+    createTimeBlocks,
+    deleteTimeBlock,
+    updateTimeBlock,
+    filterTimeBlocks
+} from "./api.js";
+
+import { renderTimeBlocks } from "./ui.js";
 
 let editingId = null;
 
 async function load() {
-    const items = await getItems();
-    renderItems(items, {
+    const timeBlocks = await getTimeBlock();
+    renderTimeBlocks(timeBlocks, {
         onDelete: handleDelete,
-        onEdit: startEdit
+        onEdit: startEdit,
+        onDetails: openDetails
     });
 }
 
 async function handleDelete(id) {
-    await deleteItem(id);
+    await deleteTimeBlock(id);
     load();
 }
 
-function startEdit(item) {
+function startEdit(timeBlock) {
     const form = document.getElementById("form");
 
     Object.keys(form.elements).forEach(name => {
-        if (item[name]) {
-            form[name].value = item[name];
+        if (timeBlock[name] !== undefined) {
+            form[name].value = timeBlock[name];
         }
     });
 
-    editingId = item._id;
+    editingId = timeBlock._id;
     form.querySelector("button").textContent = "Update";
 }
+
+async function openDetails(id) {
+    const res = await fetch(`/api/time-blocks/${id}`);
+    if (!res.ok) {
+        alert("Not found");
+        return;
+    }
+
+    const b = await res.json();
+
+    document.getElementById("d-title").textContent = b.title;
+    document.getElementById("d-day").textContent = b.day;
+    document.getElementById("d-time").textContent = `${b.startTime} – ${b.endTime}`;
+    document.getElementById("d-priority").textContent = b.priority;
+    document.getElementById("d-desc").textContent = b.description || "—";
+
+    document.getElementById("detailsModal").classList.remove("hidden");
+}
+
+document.getElementById("closeModal").onclick = () => {
+    document.getElementById("detailsModal").classList.add("hidden");
+};
 
 document.getElementById("form").addEventListener("submit", async e => {
     e.preventDefault();
@@ -36,11 +66,11 @@ document.getElementById("form").addEventListener("submit", async e => {
 
     let res;
     if (editingId) {
-        res = await updateItem(editingId, data);
+        res = await updateTimeBlock(editingId, data);
         editingId = null;
         e.target.querySelector("button").textContent = "Add";
     } else {
-        res = await createItem(data);
+        res = await createTimeBlocks(data);
     }
 
     if (!res.ok) {
@@ -57,7 +87,6 @@ document.getElementById("filterForm").addEventListener("submit", async e => {
     e.preventDefault();
 
     const formData = new FormData(e.target);
-
     const fields = formData.getAll("fields");
 
     const params = {
@@ -67,11 +96,12 @@ document.getElementById("filterForm").addEventListener("submit", async e => {
         fields: fields.join(",")
     };
 
-    const items = await getItems(params);
+    const timeBlocks = await filterTimeBlocks(params);
 
-    renderItems(items, {
+    renderTimeBlocks(timeBlocks, {
         onDelete: handleDelete,
-        onEdit: startEdit
+        onEdit: startEdit,
+        onDetails: openDetails
     });
 });
 

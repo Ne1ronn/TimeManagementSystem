@@ -54,7 +54,7 @@ Time management and daily schedule planning.
 
 The project uses **MongoDB** as a database.
 
-### Main Collection: items
+### Main Collection: time_blocks
 
 Fields:
 
@@ -66,21 +66,21 @@ The collection is created automatically on the first insert operation.
 
 ## CRUD API
 
-The following REST API endpoints are implemented for the `items` entity:
+The following REST API endpoints are implemented for the `time_blocks` entity:
 
-- `GET /api/items`  
+- `GET /api/time-blocks`  
   Returns all items.
 
-- `GET /api/items/:id`  
+- `GET /api/time-blocks/:id`  
   Returns a single item by its MongoDB ObjectId.
 
-- `POST /api/items`  
+- `POST /api/time-blocks`  
   Creates a new item using JSON request body.
 
-- `PUT /api/items/:id`  
+- `PUT /api/time-blocks/:id`  
   Updates an existing item by id using JSON request body.
 
-- `DELETE /api/items/:id`  
+- `DELETE /api/time-blocks/:id`  
   Deletes an item by id.
 
 All responses are returned in JSON format.

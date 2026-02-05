@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Register</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<nav>
+  <a href="/">Home</a>
+  <a href="/login">Login</a>
+  <a href="/register">Register</a>
+  <a href="/about">About</a>
+  <a href="/contact">Contact</a>
+  <a href="/time-blocks">Time Blocks</a>
+  <a href="/search?q=test">Search</a>
+  <a href="/item/1">Item</a>
+  <a href="/api/info" target="_blank">Open API Info</a>
+</nav>
+<h1>Register</h1>
+
+<form id="registerForm">
+  <label>
+    Username
+    <input name="username" required>
+  </label>
+
+  <label>
+    Password
+    <input type="password" name="password" required>
+  </label>
+
+  <button type="submit">Register</button>
+</form>
+
+<script>
+  document.getElementById("registerForm").addEventListener("submit", async e => {
+    e.preventDefault();
+
+    const data = Object.fromEntries(new FormData(e.target));
+
+    const res = await fetch("/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    });
+
+    const json = await res.json();
+
+    if (!res.ok) {
+      alert(json.error || "Error");
+      return;
+    }
+
+    alert("Registered successfully");
+    window.location.href = "/login";
+  });
+</script>
+
+</body>
+</html>

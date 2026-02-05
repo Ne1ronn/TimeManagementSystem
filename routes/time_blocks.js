@@ -1,14 +1,17 @@
 const express = require("express");
 const { ObjectId } = require("mongodb");
 const { getDB } = require("../database/mongo_db");
+const requireAuth = require("../middleware/requireAuth");
 
 const router = express.Router();
 
-router.get("/", async (req, res) => {
+router.get("/", requireAuth, async (req, res) => {
     try {
         const { title, day, sortBy, order, fields } = req.query;
 
-        const filter = {};
+        const filter = {
+            userId: new ObjectId(req.session.userId)
+        };
 
         if (title) {
             filter.title = { $regex: title, $options: "i" };
@@ -20,77 +23,86 @@ router.get("/", async (req, res) => {
 
         const options = {};
 
-        // PROJECTION
         if (fields) {
-            options.projection = {};
-            fields.split(",").forEach(f => options.projection[f] = 1);
+            options.projection = { _id: 1 };
+            fields.split(",").forEach(f => {
+                options.projection[f] = 1;
+            });
         }
 
-        let cursor = getDB().collection("items").find(filter, options);
+        let cursor = getDB()
+            .collection("time_blocks")
+            .find(filter, options);
 
-        // SORTING
         if (sortBy) {
             cursor = cursor.sort({
                 [sortBy]: order === "desc" ? -1 : 1
             });
         }
 
-        const items = await cursor.toArray();
-        res.status(200).json(items);
+        const time_blocks = await cursor.toArray();
+        res.status(200).json(time_blocks);
 
     } catch (err) {
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
 
-router.get("/:id", async (req, res) => {
+router.get("/:id", requireAuth, async (req, res) => {
     try {
-        const item = await getDB()
-            .collection("items")
-            .findOne({ _id: new ObjectId(req.params.id) });
+        const block = await getDB()
+            .collection("time_blocks")
+            .findOne({
+                _id: new ObjectId(req.params.id),
+                userId: new ObjectId(req.session.userId)
+            });
 
-        if (!item) {
-            return res.status(404).json({ error: "Item not found" });
+        if (!block) {
+            return res.status(404).json({ error: "Not found" });
         }
 
-        res.status(200).json(item);
+        res.status(200).json(block);
     } catch {
         res.status(400).json({ error: "Invalid id" });
     }
 });
 
-router.post("/", async (req, res) => {
+router.post("/", requireAuth, async (req, res) => {
     const { title, description, day, startTime, endTime, priority } = req.body;
 
     if (!title || !day || !startTime || !endTime) {
         return res.status(400).json({ error: "Missing required fields" });
     }
 
-    const item = {
+    const block = {
         title,
         description: description || "",
         day,
         startTime,
         endTime,
         priority: Number(priority) || 2,
+        userId: new ObjectId(req.session.userId),
         createdAt: new Date()
     };
 
-    const result = await getDB().collection("items").insertOne(item);
+    const result = await getDB()
+        .collection("time_blocks")
+        .insertOne(block);
+
     res.status(201).json({ id: result.insertedId });
 });
 
-router.put("/:id", async (req, res) => {
+router.put("/:id", requireAuth, async (req, res) => {
     try {
         const result = await getDB()
-            .collection("items")
+            .collection("time_blocks")
             .updateOne(
-                { _id: new ObjectId(req.params.id) },
+                { _id: new ObjectId(req.params.id), userId: new ObjectId(req.session.userId) },
                 { $set: req.body }
             );
 
         if (!result.matchedCount) {
-            return res.status(404).json({ error: "Item not found" });
+            return res.status(404).json({ error: "Not found" });
         }
 
         res.status(200).json({ success: true });
@@ -99,14 +111,17 @@ router.put("/:id", async (req, res) => {
     }
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", requireAuth, async (req, res) => {
     try {
         const result = await getDB()
-            .collection("items")
-            .deleteOne({ _id: new ObjectId(req.params.id) });
+            .collection("time_blocks")
+            .deleteOne({
+                _id: new ObjectId(req.params.id),
+                userId: new ObjectId(req.session.userId)
+            });
 
         if (!result.deletedCount) {
-            return res.status(404).json({ error: "Item not found" });
+            return res.status(404).json({ error: "Not found" });
         }
 
         res.status(200).json({ success: true });

@@ -85,6 +85,28 @@ nav a:hover {
     vertical-align: middle;
 }
 
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal.hidden {
+    display: none;
+}
+
+.modal-content {
+    background: #fff;
+    padding: 20px;
+    max-width: 400px;
+    width: 100%;
+    border-radius: 8px;
+}
+
+
 /* ===== Headings ===== */
 h1 {
     font-size: 32px;

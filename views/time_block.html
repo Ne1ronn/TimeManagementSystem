@@ -9,9 +9,11 @@
 
 <nav>
     <a href="/">Home</a>
+    <a href="/login">Login</a>
+    <a href="/register">Register</a>
     <a href="/about">About</a>
     <a href="/contact">Contact</a>
-    <a href="/items">Items</a>
+    <a href="/time-blocks">Time Blocks</a>
     <a href="/search?q=test">Search</a>
     <a href="/item/1">Item</a>
     <a href="/api/info" target="_blank">Open API Info</a>
@@ -113,9 +115,21 @@
         <button type="submit">Apply</button>
     </form>
 
-    <ul id="items" class="items-list"></ul>
+    <ul id="timeBlocks" class="time-block-list"></ul>
 </div>
+<div id="detailsModal" class="modal hidden">
+    <div class="modal-content">
+        <h2 id="d-title"></h2>
 
+        <p><strong>Day:</strong> <span id="d-day"></span></p>
+        <p><strong>Time:</strong> <span id="d-time"></span></p>
+        <p><strong>Priority:</strong> <span id="d-priority"></span></p>
+
+        <p id="d-desc"></p>
+
+        <button id="closeModal">Close</button>
+    </div>
+</div>
 <script type="module" src="/js/app.js"></script>
 </body>
 </html>
